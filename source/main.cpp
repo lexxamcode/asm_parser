@@ -1,28 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-char* read_asm_listing(char* text_fileway)
+void process(char* text_fileway)
 {
-	//READING FROM FILE TO STRING
-	#pragma warning(suppress : 4996)
-	FILE* input_file = fopen(text_fileway, "r");
-	long size = ftell(input_file);
-	char* listing = (char*)malloc(sizeof(char) * size);
+	const unsigned MAX = 64;
+	FILE* file = nullptr;
+	char buffer[MAX]{};
+	char* estr = nullptr;
+	file = fopen(text_fileway, "r");
 
-	if (listing)
-		fread(listing, sizeof(char), size, input_file);
+	if (file)
+	{
+		while (!feof(file))
+		{
+			estr = fgets(buffer, sizeof(buffer), file);
+			if (estr == NULL)
+			{
+				if (feof(file) != 0)
+					break;
+				else
+				{
+					puts("Error occured while reading the file.");
+					break;
+				}
+			}
+			// ПОСТРОЧНАЯ ОБРАБОТКА ТЕКСТА ПРОГРАММЫ
+			puts(buffer);
+			//КОНЕЦ
+		}
+	}
 	else
-		puts("File is empty or damaged.");
-	fclose(input_file);
-
-	return listing;
+		puts("Can not open that file.");
 }
+
 
 int main(int argc, char** argv)
 {
-	// Программа использует аргументы командной строки для получения пути к файлу с текстом
+	//Программа использует аргументы командной строки для получения пути к файлу с текстом
 	if (argc > 1)
-		char* listing = read_asm_listing(argv[1]);
+		process(argv[1]);
 	else
 		puts("You should give me a path of file to parse.");
 
